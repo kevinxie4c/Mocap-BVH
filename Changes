@@ -1,0 +1,6 @@
+Revision history for Perl extension Mocap::BVH.
+
+0.01  Sat Nov 23 16:30:02 2019
+	- original version; created by h2xs 1.23 with options
+		-AXn Mocap::BVH
+
