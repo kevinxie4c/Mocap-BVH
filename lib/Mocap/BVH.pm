@@ -61,6 +61,15 @@ sub joints {
     ($this->root, $this->root->descendants);
 }
 
+sub remove_joints {
+    my ($this) = @_;
+    if (grep $this->root->name eq $_, @_) {
+        $this->root = undef;
+    } else {
+        $this->root->remove_descendants(@_);
+    }
+}
+
 sub peek_token {
     my $this = shift;
     my $pos = pos $this->{text};

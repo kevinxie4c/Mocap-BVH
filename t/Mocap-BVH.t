@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 BEGIN { use_ok('Mocap::BVH') };
 
 #########################
@@ -30,3 +30,7 @@ is_deeply(\@channels, [qw(Zrotation Xrotation Yrotation)], 'Mocap::BVH::Joint::c
 my @joints = map $_->name, $bvh->joints;
 my @joints_expected = qw(Hips Chest Neck Head LeftCollar LeftUpArm LeftLowArm LeftHand RightCollar RightUpArm RightLowArm RightHand LeftUpLeg LeftLowLeg LeftFoot RightUpLeg RightLowLeg RightFoot);
 is_deeply(\@joints, \@joints_expected, 'Mocap::BVH::joints');
+$bvh->remove_joints('LeftHand', 'RightHand');
+@joints = map $_->name, $bvh->joints;
+@joints_expected = qw(Hips Chest Neck Head LeftCollar LeftUpArm LeftLowArm RightCollar RightUpArm RightLowArm LeftUpLeg LeftLowLeg LeftFoot RightUpLeg RightLowLeg RightFoot);
+is_deeply(\@joints, \@joints_expected, 'Mocap::BVH::remove_joints');
