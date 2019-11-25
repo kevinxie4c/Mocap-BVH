@@ -1,6 +1,6 @@
 package Mocap::BVH;
 
-use 5.028001;
+use 5.024001;
 use strict;
 use warnings;
 
