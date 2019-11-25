@@ -80,6 +80,67 @@ sub frame_time {
     $_[0]->{frame_time};
 }
 
+sub to_string {
+    my $this = shift;
+    my $output = "HIERARCHY\n";
+    $output .= &joint_to_string($this->root, 0); 
+    $output .= "MOTION\nFrames: " . $this->frames . "\nFrame Time: " . $this->frame_time . "\n";
+    for my $t(0 .. $this->frames - 1) {
+        my @nums;
+        for ($this->joints) {
+            push @nums, $_->at_time($t);
+        }
+        $output .= join("\t", @nums) . "\n";
+    }
+    $output;
+}
+
+sub save {
+    my ($this, $filename) = @_;
+    if (defined($filename)) {
+        write_file($filename, $this->to_string);
+    } else {
+        croak 'usage $bvh->save($filename)';
+    }
+}
+
+sub joint_to_string {
+    my ($joint, $indent) = @_;
+    my $output = '';
+    &indent($output, $indent);
+    if (defined($joint->parent)) {
+        $output .= 'JOINT ';
+    } else {
+        $output .= 'ROOT ';
+    }
+    $output .= $joint->name . "\n";
+    &indent($output, $indent);
+    $output .= "{\n";
+    &indent($output, $indent);
+    $output .= "\tOFFSET " . join("\t", $joint->offset) . "\n";
+    &indent($output, $indent);
+    $output .= "\tCHANNELS " . scalar($joint->channels) . ' ' .join(" ", $joint->channels) . "\n";
+    for ($joint->children) {
+        $output .= joint_to_string($_, $indent + 1);
+    }
+    if ($joint->end_site) {
+        &indent($output, $indent);
+        $output .= "\tEnd Site\n";
+        &indent($output, $indent);
+        $output .= "\t{\n";
+        &indent($output, $indent);
+        $output .= "\t\tOFFSET " . join("\t", $joint->end_site) . "\n";
+        &indent($output, $indent);
+        $output .= "\t}\n";
+    }
+    &indent($output, $indent);
+    $output .= "}\n";
+}
+
+sub indent {
+    $_[0] .= "\t" x $_[1];
+}
+
 sub peek_token {
     my $this = shift;
     my $pos = pos $this->{text};
@@ -141,6 +202,9 @@ sub parse_motion {
     skip_space($this->{text});
     my $text = substr($this->{text}, pos($this->{text}));
     my @lines = split "\n", $text;
+    if (@lines != $this->frames) {
+        croak 'inconsistent frames number';
+    }
     my @joints = $this->joints;
     my $t = 0;
     for my $line(@lines) {

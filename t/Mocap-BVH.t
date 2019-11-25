@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 BEGIN { use_ok('Mocap::BVH') };
 
 #########################
@@ -37,3 +37,9 @@ is_deeply(\@joints, \@joints_expected, 'Mocap::BVH::remove_joints');
 is_deeply([$root->at_time(0)], [qw(8.03	 35.01	 88.36	-3.41	 14.78	-164.35)], 'Mocap::BVH::Joint::at_time');
 my $right_root = $bvh->joint('RightFoot');
 is_deeply([$right_root->at_time(1)], [qw(0.00	-25.93	 0.00)], 'Mocap::BVH::Joint::at_time');
+
+my $bvh_a = Mocap::BVH->load('sample.bvh');
+$bvh_a->save('tmp.bvh');
+my $bvh_b = Mocap::BVH->load('tmp.bvh');
+is_deeply($bvh_a->root, $bvh_b->root, 'Mocap::BVH->load');
+unlink 'tmp.bvh';

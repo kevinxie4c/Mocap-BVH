@@ -10,6 +10,7 @@ sub new {
     croak "usage: ${class}->new(\$name)" unless defined $name;
     my $this =  {
         name => $name,
+        parent => undef,
         children => [],
         positions => [],
     };
@@ -45,7 +46,24 @@ sub end_site {
     if (@_) {
         $this->{end_site} = [@_];
     }
-    @{$this->{end_site}};
+    if (defined($this->{end_site})) {
+        return @{$this->{end_site}};
+    } else {
+        return undef;
+    }
+}
+
+sub parent {
+    my $this = shift;
+    if (@_) {
+        my $parent = shift;
+        if (blessed($parent) && $parent->isa('Mocap::BVH::Joint')) {
+            $this->{parent} = $parent;
+        } else {
+            croak 'not a Mocap::BVH::Joint instance';
+        }
+    }
+    $this->{parent};
 }
 
 sub children {
@@ -93,6 +111,7 @@ sub add_children {
     my $this = shift;
     for (@_) {
         if (blessed($_) && $_->isa('Mocap::BVH::Joint')) {
+            $_->parent($this);
             push @{$this->{children}}, $_;
         } else {
             croak 'not a Mocap::BVH::Joint instance';
