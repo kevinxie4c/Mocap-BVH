@@ -11,6 +11,7 @@ sub new {
     my $this =  {
         name => $name,
         children => [],
+        positions => [],
     };
     bless $this;
 }
@@ -113,6 +114,23 @@ sub remove_descendants {
     $this->remove_children(@_);
     for ($this->children) {
         $_->remove_descendants(@_);
+    }
+}
+
+sub at_time {
+    my $this = shift;
+    my $t = shift;
+    if (defined($t)) {
+        if (@_) {
+            if (@_ == $this->channels) {
+                $this->{positions}[$t] = [@_];
+            } else {
+                croak 'the number of arguments does not match the number of channels';
+            }
+        }
+        return @{$this->{positions}[$t]};
+    } else {
+        croak 'usage: $joint->at_time($t, ...)';
     }
 }
 

@@ -33,14 +33,16 @@ use File::Slurp;
 use Carp;
 use Mocap::BVH::Joint;
 
+my $digits = qr/[+\-]?\d+(?:\.\d+)?/;
 sub load {
     my ($class, $filename) = @_;
     croak "usage: ${class}->load(\$filename)" unless defined $filename;
     my $this = {};
+    bless $this, $class;
     $this->{text} = read_file($filename);
     &parse_hierarchy($this);
-    #&parse_motion($this);
-    bless $this, $class;
+    &parse_motion($this);
+    $this;
 }
 
 sub root {
@@ -68,6 +70,14 @@ sub remove_joints {
     } else {
         $this->root->remove_descendants(@_);
     }
+}
+
+sub frames {
+    $_[0]->{frames};
+}
+
+sub frame_time {
+    $_[0]->{frame_time};
 }
 
 sub peek_token {
@@ -110,10 +120,42 @@ sub parse_hierarchy {
     }
 }
 
+sub parse_motion {
+    my $this = shift;
+    skip_space($this->{text});
+    unless ($this->{text} =~ /\GMOTION/gcms) {
+        expect('MOTION');
+    }
+    skip_space($this->{text});
+    if ($this->{text} =~ /\GFrames:\s*(\d+)/gcms) {
+        $this->{frames} = $1;
+    } else {
+        expect('Frames');
+    }
+    skip_space($this->{text});
+    if ($this->{text} =~ /\GFrame\s+Time:\s*($digits)/gcms) {
+        $this->{frame_time} = $1;
+    } else {
+        expect('Frame Time');
+    }
+    skip_space($this->{text});
+    my $text = substr($this->{text}, pos($this->{text}));
+    my @lines = split "\n", $text;
+    my @joints = $this->joints;
+    my $t = 0;
+    for my $line(@lines) {
+        my @nums = split ' ', $line;
+        for (@joints) {
+            $_->at_time($t, splice(@nums, 0, scalar($_->channels)));
+        }
+        ++$t;
+    }
+}
+
 sub parse_offset {
     my $this = shift;
     skip_space($this->{text});
-    if ($this->{text} =~ /\GOFFSET\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/gcms) {
+    if ($this->{text} =~ /\GOFFSET\s+($digits)\s+($digits)\s+($digits)/gcms) {
         return ($1, $2, $3)
     } else {
         $this->{text} =~ /\G(\S+)/gcms;
