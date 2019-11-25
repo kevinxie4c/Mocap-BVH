@@ -39,11 +39,26 @@ sub load {
     my $this = {};
     $this->{text} = read_file($filename);
     &parse_hierarchy($this);
+    #&parse_motion($this);
     bless $this, $class;
 }
 
 sub root {
     $_[0]->{root};
+}
+
+sub joint {
+    my ($this, $name) = @_;
+    if (defined($name)) {
+        return $this->root->descendant($name);
+    } else {
+        croak 'usage: $bvh->joint($name)';
+    }
+}
+
+sub joints {
+    my $this = shift;
+    ($this->root, $this->root->descendants);
 }
 
 sub peek_token {
@@ -126,7 +141,6 @@ sub parse_root {
         if ($root_label eq $root) {
             my $joint = Mocap::BVH::Joint->new($label);
             $this->{root} = $joint;
-            push @{$this->{joint_list}}, $joint;
             skip_space($this->{text});
             if ($this->{text} =~ /\G\{/gcms) {
                 $joint->offset(parse_offset($this));
@@ -167,7 +181,6 @@ sub parse_joint {
         if ($joint_label eq 'JOINT') {
             my $joint = Mocap::BVH::Joint->new($label);
             $parent->add_children($joint);
-            push @{$this->{joint_list}}, $joint;
             skip_space($this->{text});
             if ($this->{text} =~ /\G\{/gcms) {
                 $joint->offset(parse_offset($this));

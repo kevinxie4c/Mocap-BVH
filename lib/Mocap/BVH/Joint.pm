@@ -7,9 +7,10 @@ use Carp;
 
 sub new {
     my ($class, $name) = @_;
-    croak "usage: ${class}->new(name)" unless defined $name;
+    croak "usage: ${class}->new(\$name)" unless defined $name;
     my $this =  {
         name => $name,
+        children => [],
     };
     bless $this;
 }
@@ -49,6 +50,42 @@ sub end_site {
 sub children {
     my $this = shift;
     @{$this->{children}};
+}
+
+sub child {
+    my ($this, $name) = @_;
+    if (defined($name)) {
+        for ($this->children) {
+            return $_ if $_->name eq $name;
+        }
+        return undef;
+    } else {
+        croak 'usage: $joint->child($name)';
+    }
+}
+
+sub descendant {
+    my ($this, $name) = @_;
+    if (defined($name)) {
+        for ($this->children) {
+            return $_ if $_->name eq $name;
+            my $ret = $_->descendant($name);
+            return $ret if defined $ret;
+        }
+        return undef;
+    } else {
+        croak 'usage: $joint->descendant($name)';
+    }
+}
+
+sub descendants {
+    my $this = shift;
+    my @list;
+    for ($this->children) {
+        push @list, $_;
+        push @list, $_->descendants;
+    }
+    @list;
 }
 
 sub add_children {
