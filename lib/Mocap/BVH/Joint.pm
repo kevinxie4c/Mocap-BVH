@@ -136,7 +136,7 @@ sub remove_descendants {
     }
 }
 
-sub at_time {
+sub at_frame {
     my $this = shift;
     my $t = shift;
     if (defined($t)) {
@@ -149,7 +149,7 @@ sub at_time {
         }
         return @{$this->{positions}[$t]};
     } else {
-        croak 'usage: $joint->at_time($t, ...)';
+        croak 'usage: $joint->at_frame($t, ...)';
     }
 }
 

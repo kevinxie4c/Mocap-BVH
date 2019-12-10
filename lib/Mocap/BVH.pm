@@ -80,6 +80,22 @@ sub frame_time {
     $_[0]->{frame_time};
 }
 
+sub at_frame {
+    my $this = shift;
+    if (@_ < 1) {
+        croak 'usage: $bvh->at_frame($t, ...)';
+    }
+    my $t = shift;
+    my @nums;
+    for ($this->joints) {
+        if (@_) {
+            $_->at_frame($t, splice(@_, 0, scalar($_->channels)));
+        }
+        push @nums, $_->at_frame($t);
+    }
+    @nums;
+}
+
 sub to_string {
     my $this = shift;
     my $output = "HIERARCHY\n";
@@ -88,7 +104,7 @@ sub to_string {
     for my $t(0 .. $this->frames - 1) {
         my @nums;
         for ($this->joints) {
-            push @nums, $_->at_time($t);
+            push @nums, $_->at_frame($t);
         }
         $output .= join("\t", @nums) . "\n";
     }
@@ -210,7 +226,7 @@ sub parse_motion {
     for my $line(@lines) {
         my @nums = split ' ', $line;
         for (@joints) {
-            $_->at_time($t, splice(@nums, 0, scalar($_->channels)));
+            $_->at_frame($t, splice(@nums, 0, scalar($_->channels)));
         }
         ++$t;
     }
