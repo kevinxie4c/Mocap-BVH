@@ -73,10 +73,12 @@ sub remove_joints {
 }
 
 sub frames {
+    $_[0]->{frames} = $_[1] if @_ > 1;
     $_[0]->{frames};
 }
 
 sub frame_time {
+    $_[0]->{frame_time} = $_[1] if @_ > 1;
     $_[0]->{frame_time};
 }
 
