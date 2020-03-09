@@ -33,7 +33,7 @@ use File::Slurp;
 use Carp;
 use Mocap::BVH::Joint;
 
-my $digits = qr/[+\-]?\d+(?:\.\d+)?/;
+my $digits = qr/[+\-]?\d+(?:\.\d+)?(?:[Ee][+\-]?\d+)?/;
 sub load {
     my ($class, $filename) = @_;
     croak "usage: ${class}->load(\$filename)" unless defined $filename;
@@ -240,7 +240,7 @@ sub parse_offset {
     if ($this->{text} =~ /\GOFFSET\s+($digits)\s+($digits)\s+($digits)/gcms) {
         return ($1, $2, $3)
     } else {
-        $this->{text} =~ /\G(\S+)/gcms;
+        $this->{text} =~ /\G(.*?)$/gcms;
         expect('OFFSET', $1);
     }
 }
