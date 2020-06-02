@@ -130,9 +130,13 @@ sub remove_children {
 
 sub remove_descendants {
     my $this = shift;
-    $this->remove_children(@_);
-    for ($this->children) {
-        $_->remove_descendants(@_);
+    if (@_) {
+        $this->remove_children(@_);
+        for ($this->children) {
+            $_->remove_descendants(@_);
+        }
+    } else {
+        $this->{children} = [];
     }
 }
 
