@@ -1,5 +1,16 @@
 package Mocap::BVH::Joint;
 
+=head1 DESCRIPTION
+
+The C<Mocap::BVH::Joint> class for joint editing.
+
+=head2 EXPORT
+
+None by default.
+
+=cut
+
+
 use strict;
 use warnings;
 use Scalar::Util qw(blessed);
@@ -57,10 +68,10 @@ sub parent {
     my $this = shift;
     if (@_) {
         my $parent = shift;
-        if (blessed($parent) && $parent->isa('Mocap::BVH::Joint')) {
+        if (!defined($parent) || (blessed($parent) && $parent->isa('Mocap::BVH::Joint'))) {
             $this->{parent} = $parent;
         } else {
-            croak 'not a Mocap::BVH::Joint instance';
+            croak 'the argument you pass is not a Mocap::BVH::Joint object';
         }
     }
     $this->{parent};
