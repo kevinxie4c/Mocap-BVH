@@ -33,7 +33,7 @@ use File::Slurp;
 use Carp;
 use Mocap::BVH::Joint;
 
-my $digits = qr/[+\-]?\d+(?:\.\d+)?(?:[Ee][+\-]?\d+)?/;
+my $digits = qr/[+\-]?(?:\d*\.\d+|\d+(?:\.\d*)?)(?:[Ee][+\-]?\d+)?/;
 sub load {
     my ($class, $filename) = @_;
     croak "usage: ${class}->load(\$filename)" unless defined $filename;
