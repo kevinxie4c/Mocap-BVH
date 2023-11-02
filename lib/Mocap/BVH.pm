@@ -48,7 +48,7 @@ Mocap::BVH - Perl extension for editing BVH files
 =head1 DESCRIPTION
 
 This package is for loading, editing, and saving BVH files.
-You can modify the joint propertis such as "name" and "offset", joint angles at different time steps, and the skeleton structure (see C<Mocap::BVH::Joint> for details).
+You can modify the joint propertis such as "name" and "offset", change channel values in different frames, and modify the skeleton structure (see L<Mocap::BVH::Joint> for details).
 
 =head2 EXPORT
 
@@ -69,7 +69,10 @@ my $digits = qr/[+\-]?(?:\d*\.\d+|\d+(?:\.\d*)?)(?:[Ee][+\-]?\d+)?/;
 
 =over
 
-=item C<< Mocap::BVH->load('filename.bvh') >> 
+=item load
+
+    $bvh = Mocap::BVH->load('filename.bvh');
+
 load a BVH file and return a Mocap::BVH object.
 
 =back
@@ -86,6 +89,18 @@ sub load {
     $this;
 }
 
+=over
+
+=item root
+
+    $bvh->root($joint);
+    $root = $bvh->root;
+
+Set/get the root joint.
+
+=back
+=cut
+
 sub root {
     my $this = shift;
     if (@_) {
@@ -100,19 +115,54 @@ sub root {
     $this->{root};
 }
 
+=over
+
+=item joint
+
+    $joint = $bvh->joint('name');
+
+Find a joint by name.
+
+=back
+=cut
+
 sub joint {
     my ($this, $name) = @_;
     if (defined($name)) {
+	return $root if ($root->name eq $name);
         return $this->root->descendant($name);
     } else {
         croak 'usage: $bvh->joint($name)';
     }
 }
 
+=over
+
+=item joints
+
+    @joints = $bvh->joints;
+
+Get all joints in the BVH.
+
+=back
+=cut
+
 sub joints {
     my $this = shift;
     ($this->root, $this->root->descendants);
 }
+
+=over
+
+=item remove_joints
+
+    $bvh->remove_joints('name');
+    $bvh->remove_joints('name1', 'name2');
+
+Remove joints by names
+
+=back
+=cut
 
 sub remove_joints {
     my ($this) = @_;
@@ -123,10 +173,34 @@ sub remove_joints {
     }
 }
 
+=over
+
+=item frames
+
+    $bvh->frames(1000);
+    $num_frames = $bvh->frames;
+
+Set/get I<Frames> field (number of frames) of the BVH.
+
+=back
+=cut
+
 sub frames {
     $_[0]->{frames} = $_[1] if @_ > 1;
     $_[0]->{frames};
 }
+
+=over
+
+=item frames
+
+    $bvh->frames(0.04);
+    $sec_per_frame = $bvh->frame_time;
+
+Set/get I<Frame Time> field of the BVH.
+
+=back
+=cut
 
 sub frame_time {
     $_[0]->{frame_time} = $_[1] if @_ > 1;
