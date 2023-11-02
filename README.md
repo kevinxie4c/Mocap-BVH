@@ -1,8 +1,6 @@
 Mocap-BVH version 0.01
 ======================
 
-# NAME
-
 Mocap::BVH - Perl extension for editing BVH files
 
 # INSTALL
