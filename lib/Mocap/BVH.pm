@@ -107,7 +107,7 @@ sub root {
 	my $joint = shift;
 	if (blessed($joint) && $joint->isa('Mocap::BVH::Joint')) {
 	    $joint->parent(undef);
-	    $root->{root} = $joint;
+	    $this->{root} = $joint;
 	} else {
             croak 'the argument you pass is not a Mocap::BVH::Joint object';
 	}
@@ -129,7 +129,7 @@ Find a joint by name.
 sub joint {
     my ($this, $name) = @_;
     if (defined($name)) {
-	return $root if ($root->name eq $name);
+	return $this->root if ($this->root->name eq $name);
         return $this->root->descendant($name);
     } else {
         croak 'usage: $bvh->joint($name)';
