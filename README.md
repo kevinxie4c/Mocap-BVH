@@ -5,37 +5,34 @@ Mocap-BVH version 0.01
 
 Mocap::BVH - Perl extension for editing BVH files
 
-# INSTALLATION
+# INSTALL
 
 To install this module run following:
-```
-perl Makefile.PL
-make
-make test
-make install
-```
+
+    perl Makefile.PL
+    make
+    make test
+    make install
 
 # SYNOPSIS
 
-```
-use Mocap::BVH;
-$bvh = Mocap::BVH->load('file.bvh');    # load a BVH file
-$root = $bvh->root; # get root joint
-$neck = $bvh->joint('neck');        # get the joint name "neck"
-@joints = $bvh->joints; # get all joints
-for (@joints) {
-    print $_->name; # print joint name
-}
-$neck->name('Neck');    # change joint name
-$bvh->save('modified-file.bvh');    # save the file
-```
+    use Mocap::BVH;
+    $bvh = Mocap::BVH->load('file.bvh');    # load a BVH file
+    $root = $bvh->root; # get root joint
+    $neck = $bvh->joint('neck');        # get the joint name "neck"
+    @joints = $bvh->joints; # get all joints
+    for (@joints) {
+        print $_->name; # print joint name
+    }
+    $neck->name('Neck');    # change joint name
+    $bvh->save('modified-file.bvh');    # save the file
 
 # DESCRIPTION
 
-    This package is for loading, editing, and saving BVH files. You can
-    modify the joint propertis such as "name" and "offset", change channel
-    values in different frames, and modify the skeleton structure (see
-    Mocap::BVH::Joint for details).
+This package is for loading, editing, and saving BVH files. You can
+modify the joint propertis such as "name" and "offset", change channel
+values in different frames, and modify the skeleton structure (see
+Mocap::BVH::Joint for details).
 
 # COPYRIGHT AND LICENCE
 
