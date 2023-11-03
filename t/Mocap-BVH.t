@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 14;
 BEGIN { use_ok('Mocap::BVH') };
 
 #########################
@@ -47,3 +47,13 @@ unlink 'tmp.bvh';
 my @nums = map $_ + 1, $bvh->at_frame(0);
 $bvh->at_frame(0, @nums);
 is_deeply([$bvh->at_frame(0)], \@nums, 'Mocap::BVH::at_frame');
+
+$bvh_a = Mocap::BVH->load('sample.bvh');
+$bvh_a->joint('Neck')->remove_channels(qw(Zrotation));
+$bvh_b = Mocap::BVH->load('sample_del_1.bvh');
+is_deeply($bvh_a->root, $bvh_b->root, 'Mocap::Joint::remove_channels (one channel)');
+
+$bvh_a = Mocap::BVH->load('sample.bvh');
+$bvh_a->root->remove_channels(qw(Zposition Zrotation));
+$bvh_b = Mocap::BVH->load('sample_del_2.bvh');
+is_deeply($bvh_a->root, $bvh_b->root, 'Mocap::Joint::remove_channels (two channels)');

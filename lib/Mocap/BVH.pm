@@ -352,9 +352,7 @@ sub parse_motion {
     my $t = 0;
     for my $line(@lines) {
         my @nums = split ' ', $line;
-        for (@joints) {
-            $_->at_frame($t, splice(@nums, 0, scalar($_->channels)));
-        }
+	$this->at_frame($t, @nums);
         ++$t;
     }
 }

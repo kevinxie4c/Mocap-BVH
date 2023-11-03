@@ -168,4 +168,19 @@ sub at_frame {
     }
 }
 
+sub remove_channels {
+    my $this = shift;
+    my @idx;
+    my @channels = $this->channels;
+    for my $i (0 .. $#channels) {
+	unless (grep $_ eq $channels[$i], @_) {
+	    push @idx, $i;
+	}
+    }
+    $this->channels(@channels[@idx]);
+    for my $pos (@{$this->{positions}}) {
+	@$pos = @{$pos}[@idx];
+    }
+}
+
 1;
