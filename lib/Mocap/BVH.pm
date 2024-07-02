@@ -192,9 +192,9 @@ sub frames {
 
 =over
 
-=item frames
+=item frame_time
 
-    $bvh->frames(0.04);
+    $bvh->frame_time(0.04);
     $sec_per_frame = $bvh->frame_time;
 
 Set/get I<Frame Time> field of the BVH.
